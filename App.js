@@ -53,7 +53,36 @@ app.post('/api/articulos',(req,res)=>{
             res.send(results);
         }
     })
-})
+});
+
+app.put('/api/articulos/:id', (req,res)=>{
+    let id = req.params.id;
+    let data = {
+    Descripcion: req.body.Descripcion,
+    Precio: req.body.Precio,
+    stock: req.body.stock
+};
+let sql = "UPDATE articulos SET ? WHERE id = ?";
+conexion.query(sql, [data, id], (error, results)=>{
+    if (error) {
+        throw error;
+    } else {
+        res.send("Registro actualizado con exito");
+    }
+});
+});
+
+app.delete('/api/articulos/:id', (req, res) =>{
+    let id = req.params.id;
+    let sql = "DELETE FROM articulos WHERE id = ?";
+    conexion.query(sql, [id], (error, result) =>{
+        if (error){
+            throw error;
+        } else {
+            res.send ("Registro eliminado con exito");
+        }
+    });
+});
 
 let puerto = process.env.PUERTO || 3000;
 app.listen(puerto, function () {
