@@ -1,14 +1,13 @@
-const express = require('express');
-const mysql = require('mysql');
-const bodyParser = require('body-parser');
-const app = express();
-app.use(bodyParser.json());
+let express = require('express');
+let mysql = require('mysql');
+let app = express();
+app.use(express.json());
 
-const conexion = mysql.createConnection({
+let conexion = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'articulos' 
+    database: 'articulosbd' 
 });
 
 conexion.connect(function (error) {
@@ -24,7 +23,7 @@ app.get('/api/articulos', (req, res) => {
         if (error) {
             throw error;
         } else {
-            res.json(filas);
+            res.send(filas);
         }
     });
 });
@@ -44,34 +43,19 @@ app.get('/api/articulos/:id', (req, res) => {
     });
 });
 
-app.post('/api/articulos', (req, res) => {
-    const data = {
-        id: req.body.id,
-        descripcion: req.body.descripcion,
-        precio: req.body.precio,
-        stock: req.body.stock
-    };
-    const sql = "INSERT INTO articulos SET ?";
-    conexion.query(sql, data, function (error, resultados) {
-        if (error) {
+app.post('/api/articulos',(req,res)=>{
+    let data = {Descripcion:req.body.Descripcion, Precio:req.body.Precio, stock:req.body.stock};
+    let sql = "INSERT INTO articulos SET ?";
+    conexion.query(sql,data,function(error,results){
+        if(error){
             throw error;
-        } else {
-            res.json({ mensaje: 'Artículo creado', id: resultados.insertId });
+        } else{
+            res.send(results);
         }
-    });
-});
+    })
+})
 
-app.on('exit', function () {
-    conexion.end(function (error) {
-        if (error) {
-            throw error;
-        } else {
-            console.log('Conexión a la base de datos cerrada');
-        }
-    });
-});
-
-const puerto = process.env.PUERTO || 3000;
+let puerto = process.env.PUERTO || 3000;
 app.listen(puerto, function () {
     console.log('Servidor OK en puerto ' + puerto);
 });
